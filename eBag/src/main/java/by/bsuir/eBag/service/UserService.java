@@ -37,4 +37,9 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public void updateUserProfilePhoto(int userId, String url){
+        User user = findOne(userId);
+        user.setImage(url);
+        save(user);
+    }
 }

@@ -30,6 +30,7 @@ public class RegistrationService {
         user.setPassword(encodedPassword);
         user.setBucket(bucket);
         user.setRole("ROLE_USER");
+        user.setImage("https://buyoncdn.ru/preset/401277851/pages_original/e4/39/a0/e439a01c3de88fab5bed0a257cc0b6dbfe3ed7a8.jpg");
 
         userRepository.save(user);
     }

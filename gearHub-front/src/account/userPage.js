@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { Link, useNavigate } from 'react-router-dom';
+import './userPage.css';
 
 export default function UserPage() {
     const [user, setUser] = useState({
@@ -12,33 +13,62 @@ export default function UserPage() {
         image: "",
         addresses: []
     });
+    const [showModal, setShowModal] = useState(false);
+    const [photoUrl, setPhotoUrl] = useState("");
+    const [userId, setUserId] = useState(null);
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        loadUser();
+        const token = localStorage.getItem("jwt-token");
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            setUserId(decodedToken.id);
+            loadUser(decodedToken.id);
+        } else {
+            navigate("/login");
+        }
     }, []);
 
-    const loadUser = async () => {
+    const loadUser = async (id) => {
         try {
             const token = localStorage.getItem("jwt-token");
-            if (!token) {
-                navigate("/login");
-                return;
-            }
-            const decodedToken = jwtDecode(token);
-            const userId = decodedToken.id;
-            const result = await axios.get(`http://localhost:8080/api/users/${userId}`, {
+            const result = await axios.get(`http://localhost:8080/api/users/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
             setUser(result.data);
+            setPhotoUrl(result.data.image || "");
         } catch (error) {
             console.error("Error loading user:", error);
             if (error.response?.status === 401) {
                 navigate("/login");
             }
+        }
+    };
+
+    const handleUpdatePhoto = async () => {
+        if (!userId) {
+            console.error("User ID is not available");
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem("jwt-token");
+            await axios.patch(
+                `http://localhost:8080/api/users/${userId}/photo?photoUrl=${encodeURIComponent(photoUrl)}`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+            setUser({ ...user, image: photoUrl });
+            setShowModal(false);
+        } catch (error) {
+            console.error("Error updating photo:", error);
         }
     };
 
@@ -56,8 +86,7 @@ export default function UserPage() {
                 }
             });
 
-            // Перезагружаем данные пользователя после успешного удаления
-            await loadUser();
+            await loadUser(userId);
 
         } catch (error) {
             console.error("Error deleting address:", error);
@@ -67,7 +96,6 @@ export default function UserPage() {
         }
     };
 
-    // Фильтруем адреса, исключая первый
     const filteredAddresses = user.addresses.slice(1);
 
     return (
@@ -79,12 +107,23 @@ export default function UserPage() {
                     <div className="card mb-3">
                         <div className="card-body p-3">
                             <div className="text-center mb-3">
-                                <img 
-                                    src={user.image || "https://via.placeholder.com/100"} 
-                                    alt="User" 
-                                    className="rounded-circle"
-                                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                                />
+                                <div className="profile-photo-wrapper" onClick={() => setShowModal(true)}>
+                                    <img 
+                                        src={user.image || "https://via.placeholder.com/100"} 
+                                        alt="User" 
+                                        className="profile-photo"
+                                    />
+                                    <div className="photo-overlay">
+                                        <i className="fas fa-camera"></i>
+                                    </div>
+                                </div>
+                                <button 
+                                    className="btn btn-outline-primary btn-sm mt-2 change-photo-btn"
+                                    onClick={() => setShowModal(true)}
+                                >
+                                    <i className="fas fa-camera me-2"></i>
+                                    Изменить фото
+                                </button>
                             </div>
                             <h5 className="card-title mb-3">Личные данные</h5>
                             <div className="row">
@@ -156,6 +195,40 @@ export default function UserPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Модальное окно */}
+            {showModal && (
+                <div className="modal d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Изменить фото профиля</h5>
+                                <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="mb-3">
+                                    <label className="form-label">URL фотографии</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={photoUrl}
+                                        onChange={(e) => setPhotoUrl(e.target.value)}
+                                        placeholder="Введите URL фотографии"
+                                    />
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                                    Отмена
+                                </button>
+                                <button type="button" className="btn btn-primary" onClick={handleUpdatePhoto}>
+                                    Сохранить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

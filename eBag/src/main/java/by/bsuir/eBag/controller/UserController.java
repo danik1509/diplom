@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,5 +67,17 @@ public class UserController {
                 .map(error -> error.getField() + " -- " + error.getDefaultMessage())
                 .collect(Collectors.toList());
         return String.join("; ", errorMessages);
+    }
+
+    @PatchMapping("/users/{id}/photo")
+    public ResponseEntity<String> updateUserProfilePhoto(
+            @PathVariable("id") int userId,
+            @RequestParam("photoUrl") String photoUrl) {
+        try {
+            userService.updateUserProfilePhoto(userId, photoUrl);
+            return ResponseEntity.ok("Profile photo updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to update profile photo: " + e.getMessage());
+        }
     }
 }
