@@ -36,7 +36,8 @@ public class WebSecurityConfig {
                                                 "swagger-ui/**",
                                                 "/v3/**",
                                                 "/error",
-                                                "/api/products"
+                                                "/api/products",
+                                                "/api/order/**"
                                         )
                                         .permitAll()
                                         .anyRequest()

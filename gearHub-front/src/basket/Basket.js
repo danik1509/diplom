@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { Link, useNavigate } from 'react-router-dom';
+import './Basket.css';
 
 export default function Basket() {
   const [cartItems, setCartItems] = useState([]);
@@ -64,11 +65,13 @@ export default function Basket() {
 
       if (response.status === 200) {
         fetchCartItems();
-      } else {
-        console.log('Ошибка при удалении товара из корзины');
       }
     } catch (error) {
-      console.log('Ошибка при удалении товара из корзины:', error);
+      if (error.response?.status === 409) {
+        alert(error.response.data);
+      } else {
+        console.error('Ошибка при удалении товара из корзины:', error);
+      }
     }
   };
 
@@ -93,72 +96,83 @@ export default function Basket() {
   return (
     <div className="container">
       <div className="row">
-        <div className="col-md-6 offset-md-3 border rounded p-4 mt-2 shadow">
-          <h2 className="text-center m-4">Корзина</h2>
+        <div className="col-md-8 offset-md-2 border rounded p-4 mt-2 shadow basket-container">
+          <h2 className="text-center m-4 basket-title">Корзина</h2>
           {cartItems.length === 0 ? (
-            <p className="text-center">Корзина пуста</p>
+            <p className="text-center empty-cart-message">Корзина пуста</p>
           ) : (
-            <table className="table table-striped">
-              <thead>
-                <tr>
-                  <th>Товар</th>
-                  <th>Цена</th>
-                  <th>Количество</th>
-                  <th>Действия</th>
-                </tr>
-              </thead>
-              <tbody>
-                {cartItems.map((item) => (
-                  <tr key={item.id}>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        {item.image && (
-                          <img 
-                            src={item.image} 
-                            alt={item.tittle || item.name} 
-                            style={{ width: '50px', height: '50px', objectFit: 'cover', marginRight: '10px' }}
-                          />
-                        )}
-                        <span>{item.tittle || item.name}</span>
-                      </div>
-                    </td>
-                    <td>{item.price} BYN</td>
-                    <td>
-                      <div className="d-flex align-items-center justify-content-center">
-                        <button 
-                          className="btn btn-outline-secondary btn-sm me-2"
-                          onClick={() => updateQuantity(item.id, (item.quantity || 1) - 1)}
-                        >
-                          -
-                        </button>
-                        <span className="mx-2">{item.quantity || 1}</span>
-                        <button 
-                          className="btn btn-outline-secondary btn-sm ms-2"
-                          onClick={() => updateQuantity(item.id, (item.quantity || 1) + 1)}
-                        >
-                          +
-                        </button>
-                      </div>
-                    </td>
-                    <td>
-                      <button
-                        onClick={() => removeFromCart(item.id)}
-                        className="btn btn-outline-danger btn-sm"
-                      >
-                        Удалить
-                      </button>
-                    </td>
+            <div className="table-responsive">
+              <table className="table table-hover">
+                <thead className="table-header">
+                  <tr>
+                    <th>Товар</th>
+                    <th>Цена</th>
+                    <th>Количество</th>
+                    <th>Действия</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {cartItems.map((item) => (
+                    <tr key={item.id} className="cart-item">
+                      <td>
+                        <div className="d-flex align-items-center">
+                          {item.image && (
+                            <img 
+                              src={item.image} 
+                              alt={item.tittle || item.name} 
+                              className="product-image"
+                            />
+                          )}
+                          <span className="product-name">{item.tittle || item.name}</span>
+                        </div>
+                      </td>
+                      <td className="price">{item.price} BYN</td>
+                      <td>
+                        <div className="quantity-controls">
+                          <button 
+                            className="btn btn-outline-secondary btn-sm quantity-btn"
+                            onClick={() => updateQuantity(item.id, (item.quantity || 1) - 1)}
+                          >
+                            -
+                          </button>
+                          <span className="quantity">{item.quantity || 1}</span>
+                          <button 
+                            className="btn btn-outline-secondary btn-sm quantity-btn"
+                            onClick={() => updateQuantity(item.id, (item.quantity || 1) + 1)}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </td>
+                      <td>
+                        <button
+                          onClick={() => removeFromCart(item.id)}
+                          className="btn btn-outline-danger btn-sm remove-btn"
+                        >
+                          Удалить
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
-          {userAddresses.length !== 0 ? (
-            <Link className="btn btn-outline-primary mt-3" to="/createOrder">
-              Создать заказ
-            </Link>
+          {cartItems.length > 0 && userAddresses.length > 0 ? (
+            <div className="text-center mt-4">
+              <Link className="btn btn-outline-primary create-order-btn" to="/createOrder">
+                Создать заказ
+              </Link>
+            </div>
+          ) : cartItems.length === 0 ? (
+            <p className="text-center text-muted mt-3">Добавьте товары в корзину для оформления заказа</p>
           ) : (
-            <p>Пожалуйста, добавьте адрес перед созданием заказа</p>
+            <div className="text-center mt-3">
+              <p className="text-muted">Пожалуйста, добавьте адрес перед созданием заказа</p>
+              <Link to="/account" className="btn btn-outline-primary mt-2">
+                Добавить адрес
+              </Link>
+            </div>
           )}
         </div>
       </div>

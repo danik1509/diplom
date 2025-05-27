@@ -2,6 +2,7 @@ package by.bsuir.eBag.service;
 
 import by.bsuir.eBag.model.Bucket;
 import by.bsuir.eBag.repository.BucketRepository;
+import by.bsuir.eBag.repository.OrderRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -19,10 +20,9 @@ import java.util.Optional;
 public class BucketService {
 
     private final BucketRepository bucketRepository;
-
     private final ModelMapper modelMapper;
-
     private final ProductService productService;
+    private final OrderRepository orderRepository;
 
     /*  private final OrderService orderService;*/
 
@@ -36,7 +36,22 @@ public class BucketService {
     @Transactional
     public void removeProductFromBucket(int bucketId, Integer id) {
         Bucket bucket = getById(bucketId);
-        bucket.getProducts().remove(productService.findOne(id));
+        var product = productService.findOne(id);
+        
+        // Проверяем, используется ли товар в заказах
+        var ordersWithProduct = orderRepository.findOrdersByProduct(product);
+        if (!ordersWithProduct.isEmpty()) {
+            throw new IllegalStateException("Невозможно удалить товар из корзины, так как он используется в заказах");
+        }
+        
+        bucket.getProducts().remove(product);
+        bucketRepository.save(bucket);
+    }
+
+    @Transactional
+    public void clearBucketAfterOrder(int bucketId) {
+        Bucket bucket = getById(bucketId);
+        bucket.getProducts().clear();
         bucketRepository.save(bucket);
     }
 

@@ -58,8 +58,15 @@ public class OrderController {
 
     @PostMapping("/order")
     public OrderDTO createOrder(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody OrderDTO orderDTO) {
-
-        return ModelMapperUtil.convertObject(orderService.createOrder(customUserDetails.getUser().getId(), orderDTO.getDateOfDelivery()), OrderDTO.class, modelMapper);
+        return ModelMapperUtil.convertObject(
+            orderService.createOrder(
+                customUserDetails.getUser().getId(),
+                orderDTO.getAddress().getId(),
+                orderDTO.getDateOfDelivery()
+            ),
+            OrderDTO.class,
+            modelMapper
+        );
     }
 
     @PatchMapping("/order/{id}")

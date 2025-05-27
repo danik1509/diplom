@@ -16,6 +16,10 @@ export default function UserPage() {
     const [showModal, setShowModal] = useState(false);
     const [photoUrl, setPhotoUrl] = useState("");
     const [userId, setUserId] = useState(null);
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [editAddress, setEditAddress] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const navigate = useNavigate();
 
@@ -73,6 +77,12 @@ export default function UserPage() {
     };
 
     const handleDeleteAddress = async (addressId) => {
+        console.log("handleDeleteAddress вызван с ID:", addressId);
+        if (!addressId) {
+            console.error("Address ID is undefined");
+            return;
+        }
+
         try {
             const token = localStorage.getItem("jwt-token");
             if (!token) {
@@ -80,7 +90,9 @@ export default function UserPage() {
                 return;
             }
             
-            await axios.delete(`http://localhost:8080/api/addresses/${addressId}`, {
+            console.log("Deleting address with ID:", addressId);
+            
+            await axios.delete(`http://localhost:8080/api/address/${addressId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -96,7 +108,47 @@ export default function UserPage() {
         }
     };
 
-    const filteredAddresses = user.addresses.slice(1);
+    const handleEditAddress = (address) => {
+        setEditAddress(address);
+        setEditModalOpen(true);
+    };
+
+    const handleUpdateAddress = async () => {
+        if (!editAddress || !editAddress.id) return;
+        
+        // Валидация полей
+        if (!editAddress.street || !editAddress.houseNumber) {
+            setError("Пожалуйста, заполните обязательные поля (улица и дом)");
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
+        
+        try {
+            const token = localStorage.getItem("jwt-token");
+            await axios.patch(
+                `http://localhost:8080/api/address/${editAddress.id}`,
+                editAddress,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+            setEditModalOpen(false);
+            await loadUser(userId);
+            // Показываем уведомление об успехе
+            alert("Адрес успешно обновлен");
+        } catch (error) {
+            console.error("Ошибка при обновлении адреса:", error);
+            setError(error.response?.data?.message || "Произошла ошибка при обновлении адреса");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const filteredAddresses = user.addresses;
 
     return (
         <div className="container">
@@ -160,7 +212,6 @@ export default function UserPage() {
                                         <div key={address.id} className="list-group-item py-2">
                                             <div className="d-flex justify-content-between align-items-center">
                                                 <div>
-                                                    <h6 className="mb-1 small">{address.city || 'Город не указан'}</h6>
                                                     <p className="mb-1 small">{address.street || 'Улица не указана'}</p>
                                                     <small className="text-muted">
                                                         {address.houseNumber ? `Дом ${address.houseNumber}` : 'Дом не указан'}
@@ -173,6 +224,12 @@ export default function UserPage() {
                                                     )}
                                                 </div>
                                                 <div>
+                                                    <button 
+                                                        className="btn btn-outline-primary btn-sm me-2"
+                                                        onClick={() => handleEditAddress(address)}
+                                                    >
+                                                        Редактировать
+                                                    </button>
                                                     <button 
                                                         className="btn btn-outline-danger btn-sm" 
                                                         onClick={() => handleDeleteAddress(address.id)}
@@ -223,6 +280,77 @@ export default function UserPage() {
                                 </button>
                                 <button type="button" className="btn btn-primary" onClick={handleUpdatePhoto}>
                                     Сохранить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Модальное окно редактирования адреса */}
+            {editModalOpen && editAddress && (
+                <div className="modal d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Редактировать адрес</h5>
+                                <button type="button" className="btn-close" onClick={() => setEditModalOpen(false)}></button>
+                            </div>
+                            <div className="modal-body">
+                                {error && (
+                                    <div className="alert alert-danger" role="alert">
+                                        {error}
+                                    </div>
+                                )}
+                                <input
+                                    type="text"
+                                    className="form-control mb-2"
+                                    value={editAddress.street || ''}
+                                    onChange={e => setEditAddress({ ...editAddress, street: e.target.value })}
+                                    placeholder="Улица *"
+                                    required
+                                />
+                                <input
+                                    type="number"
+                                    className="form-control mb-2"
+                                    value={editAddress.houseNumber || ''}
+                                    onChange={e => setEditAddress({ ...editAddress, houseNumber: e.target.value })}
+                                    placeholder="Дом *"
+                                    required
+                                />
+                                <input
+                                    type="number"
+                                    className="form-control mb-2"
+                                    value={editAddress.apartmentNumber || ''}
+                                    onChange={e => setEditAddress({ ...editAddress, apartmentNumber: e.target.value })}
+                                    placeholder="Квартира"
+                                />
+                                <input
+                                    type="number"
+                                    className="form-control mb-2"
+                                    value={editAddress.postCode || ''}
+                                    onChange={e => setEditAddress({ ...editAddress, postCode: e.target.value })}
+                                    placeholder="Индекс"
+                                />
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" onClick={() => setEditModalOpen(false)}>
+                                    Отмена
+                                </button>
+                                <button 
+                                    type="button" 
+                                    className="btn btn-primary" 
+                                    onClick={handleUpdateAddress}
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? (
+                                        <>
+                                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                            Сохранение...
+                                        </>
+                                    ) : (
+                                        'Сохранить'
+                                    )}
                                 </button>
                             </div>
                         </div>

@@ -8,6 +8,8 @@ import lombok.Setter;
 @Setter
 public class AddressDTO {
 
+    private int id;
+
     @NotEmpty
     private int apartmentNumber;
 

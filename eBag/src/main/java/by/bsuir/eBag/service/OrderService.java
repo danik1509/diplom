@@ -43,9 +43,9 @@ public class OrderService {
         orderRepository.deleteById(id);
     }
 
-    public Order createOrder(int userid, Date date) {
+    public Order createOrder(int userid, int addressId, Date date) {
         User user = userService.findOne(userid);
-        Address address = addressService.findByUser(user);
+        Address address = addressService.findOne(addressId);
 
         List<Product> bucketProductList = user.getBucket().getProducts();
         List<Product> productList = new ArrayList<>(bucketProductList);

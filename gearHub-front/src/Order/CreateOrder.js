@@ -65,14 +65,12 @@ export default function CreateOrder() {
             }
 
             const orderData = {
-                addressId: selectedAddress,
-                items: cartItems.map(item => ({
-                    productId: item.id,
-                    quantity: item.quantity
-                }))
+                address: { id: selectedAddress },
+                dateOfDelivery: new Date(), // если нужно, можно заменить на выбранную дату
+                // остальные поля, если нужны
             };
 
-            const response = await axios.post('http://localhost:8080/api/orders', orderData, {
+            const response = await axios.post('http://localhost:8080/api/order', orderData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -82,7 +80,9 @@ export default function CreateOrder() {
                 // Очищаем корзину после создания заказа
                 const decodedToken = jwtDecode(token);
                 const userId = decodedToken.id;
-                await axios.delete(`http://localhost:8080/api/bucket/${userId}`, {
+                
+                // Очищаем корзину целиком
+                await axios.delete(`http://localhost:8080/api/bucket/clear/${userId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -154,15 +154,15 @@ export default function CreateOrder() {
                                                 id={`address-${address.id}`}
                                                 value={address.id}
                                                 checked={selectedAddress === address.id}
-                                                onChange={(e) => setSelectedAddress(e.target.value)}
+                                                onChange={(e) => setSelectedAddress(Number(e.target.value))}
                                             />
                                             <label className="form-check-label" htmlFor={`address-${address.id}`}>
                                                 <div>
-                                                    <h6 className="mb-1 small">{address.city || 'Город не указан'}</h6>
                                                     <p className="mb-1 small">{address.street || 'Улица не указана'}</p>
                                                     <small className="text-muted">
                                                         {address.houseNumber ? `Дом ${address.houseNumber}` : 'Дом не указан'}
                                                         {address.apartmentNumber ? `, Кв. ${address.apartmentNumber}` : ''}
+                                                        {address.postCode ? `, Индекс: ${address.postCode}` : ''}
                                                     </small>
                                                 </div>
                                             </label>

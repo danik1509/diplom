@@ -38,9 +38,21 @@ public class BucketController {
     }
 
     @DeleteMapping
-    public ResponseEntity<HttpStatus> removeFromBucket(@AuthenticationPrincipal CustomUserDetails user,
+    public ResponseEntity<?> removeFromBucket(@AuthenticationPrincipal CustomUserDetails user,
                                                        @RequestParam Integer id) {
-        bucketService.removeProductFromBucket(user.getUser().getBucket().getBucketId(), id);
+        try {
+            bucketService.removeProductFromBucket(user.getUser().getBucket().getBucketId(), id);
+            return ResponseEntity.ok(HttpStatus.OK);
+        } catch (IllegalStateException e) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/clear/{id}")
+    public ResponseEntity<HttpStatus> clearBucketAfterOrder(@PathVariable("id") int id) {
+        bucketService.clearBucketAfterOrder(id);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 

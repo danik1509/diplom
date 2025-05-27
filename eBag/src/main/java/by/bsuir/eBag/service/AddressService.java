@@ -38,8 +38,21 @@ public class AddressService {
 
     @Transactional
     public void update(int id, Address updatedAddress) {
-        updatedAddress.setId(id);
-        addressRepository.save(updatedAddress);
+        Address existingAddress = addressRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Address not found"));
+        
+        // Сохраняем существующего владельца
+        User owner = existingAddress.getOwner();
+        
+        // Обновляем поля адреса
+        existingAddress.setStreet(updatedAddress.getStreet());
+        existingAddress.setHouseNumber(updatedAddress.getHouseNumber());
+        existingAddress.setApartmentNumber(updatedAddress.getApartmentNumber());
+        existingAddress.setPostCode(updatedAddress.getPostCode());
+        
+        // Сохраняем обновленный адрес
+        addressRepository.save(existingAddress);
+        log.info("Updated address with id {}", id);
     }
 
     public void delete(int id) {
