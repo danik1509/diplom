@@ -1,0 +1,31 @@
+@font-face {
+    font-family: 'japanfont'; /* Название шрифта, которое вы хотите использовать */
+    src: url('./fonts/japanfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.navbar-title {
+    font-family: 'japanfont'; /* Применяем шрифт к заголовку */
+    font-size: 50px;
+}
+
+.navbar-subtitle {
+    color: #E42727;
+    font-family: 'japanfont'; /* Применяем шрифт к подзаголовку */
+}
+
+.navbar-brand {
+    font-family: 'japanfont', Arial, sans-serif;
+}
+
+.navbar-brand strong {
+    font-family: 'japanfont', Arial, sans-serif;
+}
+
+.button {
+    text-decoration: none; /* Убирает подчеркивание */
+    font-weight: bold; /* Устанавливает жирность текста */
+  }
+

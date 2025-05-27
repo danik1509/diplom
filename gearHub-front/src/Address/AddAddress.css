@@ -1,0 +1,39 @@
+.custom-input {
+    background-color: #ffffff;
+    border-color: #dddddd;
+    color: #ffffff;
+  }
+  
+  .custom-button {
+    background-color: #ffffff;
+    border-color: #dddddd;
+    color: #000000;
+  }
+  
+  .custom-button:hover {
+    background-color: #0056b3;
+    border-color: #ffffff;
+  }
+
+  .btn-success.custom-button {
+    background-color: #28a745; /* Зелёный фон для кнопки подтвердить */
+    border-color: #28a745; /* Цвет границы для кнопки подтвердить */
+    color: #ffffff; /* Цвет текста для кнопки подтвердить */
+}
+
+.btn-success.custom-button:hover {
+    background-color: #218838; /* Темно-зеленый цвет при наведении */
+    border-color: #1e7e34; /* Цвет границы при наведении для кнопки подтвердить */
+}
+
+/* Специфические стили для кнопки "Отмена" */
+.btn-danger.custom-button {
+    background-color: #dc3545; /* Красный фон для кнопки отмены */
+    border-color: #dc3545; /* Цвет границы для кнопки отмены */
+    color: #ffffff; /* Цвет текста для кнопки отмены */
+}
+
+.btn-danger.custom-button:hover {
+    background-color: #c82333; /* Темно-красный цвет при наведении */
+    border-color: #bd2130; /* Цвет границы при наведении для кнопки отмены */
+}

@@ -1,0 +1,23 @@
+.button {
+    background-color: #E42727; /* Original background color */
+    color: white;              /* Original text color */
+    padding: 15px 30px;       /* Отступы */
+    border: none;             /* Убираем рамку */
+    border-radius: 25px;       /* Закругленные углы */
+    font-size: 16px;          /* Размер шрифта */
+    cursor: pointer;          /* Курсор при наведении */
+    transition: background-color 0.3s ease; /* Плавный переход цвета */
+    margin: 0 0px;           /* Keep spacing between buttons */
+    line-height: 1.5;        /* Высота строки для выравнивания */
+    display: inline-block;    /* Изменение на inline-block для выравнивания */
+    vertical-align: middle;   /* Выравнивание по центру */
+}
+
+/* Эффект при наведении */
+.button:hover {
+    background-color: #fdc1c1; /* Original hover color */
+}
+
+.top-bar {
+    border-top: 5px solid #C0C0C0;
+}

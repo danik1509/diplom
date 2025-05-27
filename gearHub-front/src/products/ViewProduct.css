@@ -1,0 +1,27 @@
+.custom-button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 3px;
+    border: none; /* Убираем границу */
+    background-color: #4CAF50; /* Цвет фона (зеленый) */
+    color: white; /* Цвет текста (белый) */
+    cursor: pointer; /* Курсор становится указателем */
+    transition: background-color 0.3s ease; /* Плавный переход фона */
+    font-size: 16px; /* Увеличиваем размер шрифта для кнопки */
+  }
+  
+  .custom-button:hover {
+    background-color: #45a049; /* Цвет фона при наведении */
+    color: white; /* Устанавливаем цвет текста белым при наведении */
+  }
+  
+  .custom-button:active {
+    background-color: #388e3c; /* Цвет фона при нажатии */
+  }
+  
+  /* Убираем стандартные стили кнопок */
+  button {
+    appearance: none; /* Убираем стандартные стили */
+    -webkit-appearance: none; /* Для Safari */
+    -moz-appearance: none; /* Для Firefox */
+  }

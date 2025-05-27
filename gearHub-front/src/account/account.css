@@ -1,0 +1,68 @@
+.user-page {
+  display: flex;                /* Используем flexbox */
+  justify-content: center;      /* Выровнять содержимое по горизонтали */
+  align-items: center;          /* Выровнять содержимое по вертикали */
+  height: 80vh;                /* Высота на весь экран */
+  background-color: #ffffff;    /* Белый фон */
+}
+
+.user-details {
+  width: 300px;                 /* Ширина блока с данными пользователя */
+  padding: 20px;                /* Отступы внутри блока */
+  border: 1px solid #dddddd;    /* Граница */
+  border-radius: 5px;           /* Радиус границ */
+  text-align: center;           /* Центрирование текста */
+  margin: 0;                   /* Убираем отступы сверху и снизу */
+  background-color: #ffffff;    /* Белый фон для блока */
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1); /* Тень для блока */
+}
+
+.user-image img {
+  border-radius: 50%;           /* Картинка с закругленными углами */
+  width: 200px;                 /* Ширина картинки */
+  height: 200px;                /* Высота картинки */
+  object-fit: cover;            /* Обеспечение заполнения изображения без искажений */
+  margin-bottom: 20px;          /* Отступ снизу */
+}
+
+.user-info {
+  margin-bottom: 15px;          /* Отступ снизу для информации о пользователе */
+}
+
+.user-addresses {
+  margin-top: 20px;             /* Отступ сверху для адресов */
+}
+
+.user-addresses a {
+  color: #ffffff;               /* Цвет ссылок */
+  text-decoration: none;         /* Убираем подчеркивание */
+}
+
+.user-addresses a:hover {
+  text-decoration: none;    /* Подчеркивание на наведение */
+}
+
+.custom-button {
+  background-color: #ffffff; /* Фон кнопки */
+  border-color: #dddddd; /* Цвет границы */
+  color: #000000; /* Цвет текста по умолчанию */
+}
+
+.custom-button:hover {
+  background-color: #0056b3; /* Цвет фона при наведении */
+  border-color: #ffffff; /* Цвет границы при наведении */
+  color: #000000; /* Цвет текста остается черным при наведении */
+}
+
+/* Специфические стили для кнопки "Добавить адрес" */
+.btn-info.custom-button {
+  background-color: #54adf5; /* Светло-синий фон для кнопки "Добавить адрес" */
+  border-color: #54adf5; /* Цвет границы для светло-синей кнопки */
+  color: #ffffff; /* Цвет текста для кнопки "Добавить адрес" */
+}
+
+.btn-info.custom-button:hover {
+  background-color: #80ccff; /* Темный светло-синий при наведении */
+  border-color: #80ccff; /* Цвет границы при наведении */
+  color: #ffffff; /* Цвет текста остается белым при наведении */
+}

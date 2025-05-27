@@ -1,0 +1,38 @@
+/* Home.css */
+
+.card {
+    border: 1px solid #141212;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-body {
+    text-align: center;
+  }
+  
+  .card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  
+  .card-text {
+    margin-bottom: 10px;
+  }
+  
+  .btn-primary {
+    background-color: #105008;
+    border-color: #00ff0d;
+  }
+  
+  .btn-primary:hover {
+    background-color: #00d962;
+    border-color: #00d91d;
+  }
+  
+  .btn-primary:disabled {
+    background-color: #5a5656;
+    border-color: #6c757d;
+    pointer-events: none;
+  }

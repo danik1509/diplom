@@ -1,0 +1,35 @@
+.custom-input {
+    background-color: #ffffff;
+    border-color: #dddddd;
+    color: #000000; /* Цвет текста на белом фоне */
+}
+
+.custom-button {
+    background-color: #ffffff; /* Фон кнопки */
+    border-color: #dddddd; /* Цвет границы */
+    color: #000000; /* Цвет текста */
+}
+
+.custom-button:hover {
+    background-color: #0056b3; /* Цвет фона при наведении */
+    border-color: #ffffff; /* Цвет границы при наведении */
+}
+
+/* Специфические стили для кнопки "Подтвердить" */
+.btn-success.custom-button {
+    background-color: #28a745; /* Зелёный фон для кнопки подтвердить */
+    border-color: #28a745; /* Цвет границ */
+}
+
+/* Убираем стрелки для полей ввода типа number */
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+    -webkit-appearance: none; /* Убираем стрелки для Chrome, Safari и Edge */
+    margin: 0;
+}
+
+.no-spinner {
+    -moz-appearance: textfield; /* Убираем стрелки для Firefox */
+}
+
+/* Дополнительное оформление для полей ввода типа number */
