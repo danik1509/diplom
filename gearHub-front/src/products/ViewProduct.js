@@ -2,7 +2,8 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import "../layout/buttons.css"; 
+import { Card, Button, Row, Col, Badge } from 'react-bootstrap';
+import '../layout/buttons.css';
 
 export default function ViewProduct() {
     const navigate = useNavigate();
@@ -74,6 +75,7 @@ export default function ViewProduct() {
                     Authorization: `Bearer ${token}`
                 }
             });
+            navigate("/basket");
         } catch (error) {
             console.error("Error adding to basket:", error);
             if (error.response?.status === 401) {
@@ -86,54 +88,59 @@ export default function ViewProduct() {
     const decodedToken = jwtToken ? jwtDecode(jwtToken) : null;
 
     return (
-        <div className="container">
-            <div className="row">
-                <div className="col-md-6 offset-md-3 border rounded p-4 mt-2 shadow">
-                    <h2 className="text-center m-4">Подробнее</h2>
-
-                    <div className="card">
-                        <div>
-                            <ul className="list-group list-group-flush">
-                                {product.image && (
-                                    <img height={500} src={product.image} alt={product.tittle} />
-                                )}
-                                <li className="list-group-item">
-                                    <b>Название:</b> {product.tittle}
-                                </li>
-                                <li className="list-group-item">
-                                    <b>Описание:</b> {product.description}
-                                </li>
-                                <li className="list-group-item">
-                                    <b>Вес:</b> {product.weight} г
-                                </li>
-                                <li className="list-group-item">
-                                    <b>Цена:</b> {product.price} BYN
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
+        <div className="container py-5">
+            <Row className="justify-content-center">
+                <Col md={8} lg={7}>
+                    <Card className="shadow-lg border-0 rounded-4">
+                        <Row className="g-0 align-items-center">
+                            <Col md={6} className="text-center p-4">
+                                <div style={{background: '#f8f9fa', borderRadius: '20px', padding: '10px'}}>
+                                    <Card.Img 
+                                        variant="top" 
+                                        src={product.image || 'https://via.placeholder.com/400x500?text=Нет+фото'} 
+                                        alt={product.tittle} 
+                                        style={{maxHeight: 350, objectFit: 'contain', borderRadius: '15px', boxShadow: '0 4px 24px rgba(0,0,0,0.07)'}} 
+                                    />
+                                </div>
+                            </Col>
+                            <Col md={6} className="p-4">
+                                <Card.Body>
+                                    <Card.Title as="h2" className="mb-3 fw-bold text-primary" style={{fontSize: '2rem'}}>
+                                        {product.tittle}
+                                    </Card.Title>
+                                    <Card.Text className="mb-2 text-muted" style={{minHeight: 60}}>
+                                        {product.description}
+                                    </Card.Text>
+                                    <div className="mb-3">
+                                        <Badge bg="info" className="me-2" style={{fontSize: '1rem'}}>Вес: {product.weight} г</Badge>
+                                        <Badge bg="success" style={{fontSize: '1.1rem'}}>Цена: {product.price} BYN</Badge>
+                                    </div>
+                                    <div className="d-flex flex-wrap gap-2 mt-4">
+                                        {decodedToken !== null && decodedToken.role === "ROLE_ADMIN" && (
+                                            <>
+                                                <Link className="btn btn-outline-success" to={`/editproduct/${id}`}>
+                                                    <i className="fas fa-edit me-1"></i> Редактировать
+                                                </Link>
+                                                <Button variant="outline-danger" onClick={deleteProduct}>
+                                                    <i className="fas fa-trash-alt me-1"></i> Удалить
+                                                </Button>
+                                            </>
+                                        )}
+                                        <Button variant="primary" onClick={addToBasket}>
+                                            <i className="fas fa-shopping-cart me-2"></i>В корзину
+                                        </Button>
+                                    </div>
+                                </Card.Body>
+                            </Col>
+                        </Row>
+                    </Card>
                     <div className="d-flex justify-content-center mt-4">
-                        {decodedToken !== null && decodedToken.role === "ROLE_ADMIN" && (
-                            <>
-                                <Link className="btn btn-outline-success mx-1" to={`/editproduct/${id}`}>
-                                    Редактировать
-                                </Link>
-                                <button className="btn btn-outline-danger mx-1" onClick={deleteProduct}>
-                                    Удалить
-                                </button>
-                            </>
-                        )}
-                        <button className="btn btn-outline-primary mx-1" onClick={addToBasket}>
-                            В корзину
-                        </button>
+                        <Link className="btn btn-outline-primary" to={'/'}>
+                            На главную
+                        </Link>
                     </div>
-
-                    <Link className="btn btn-outline-primary my-2" to={'/'}>
-                        На главную
-                    </Link>
-                </div>
-            </div>
+                </Col>
+            </Row>
         </div>
     );
 }
