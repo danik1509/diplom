@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function AddProduct() {
@@ -11,18 +11,49 @@ export default function AddProduct() {
         description: "",
         weight: "",
         price: "",
-        image: ""
+        image: "",
+        category: null
     });
 
-    const { tittle, description, weight, price, image } = product;
+    const [categories, setCategories] = useState([]);
+    const [showCategories, setShowCategories] = useState(false);
+
+    const { tittle, description, weight, price, image, category } = product;
+
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
+    const fetchCategories = async () => {
+        try {
+            const response = await axios.get("http://localhost:8080/api/categories", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("jwt-token")}`
+                }
+            });
+            setCategories(response.data);
+        } catch (error) {
+            console.error("Error fetching categories:", error);
+        }
+    };
 
     const onInputChange = (e) => {
         setProduct({ ...product, [e.target.name]: e.target.value });
     };
 
+    const handleCategorySelect = (selectedCategory) => {
+        setProduct({ ...product, category: selectedCategory });
+        setShowCategories(false);
+    };
+
     const onSubmit = async (e) => {
         e.preventDefault();
-        await axios.post("http://localhost:8080/api/product", product, {
+        const productData = {
+            ...product,
+            category: category ? { id: category.id } : null
+        };
+        
+        await axios.post("http://localhost:8080/api/product", productData, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("jwt-token")}`
             }
@@ -63,7 +94,7 @@ export default function AddProduct() {
                             <label htmlFor="Weight" className="form-label">Вес товара</label>
                             <input
                                 type="number"
-                                className="form-control no-spinner" // добавляем класс для удаления стрелок
+                                className="form-control no-spinner"
                                 placeholder="Введите вес продукта"
                                 name="weight"
                                 value={weight}
@@ -74,7 +105,7 @@ export default function AddProduct() {
                             <label htmlFor="Price" className="form-label">Цена</label>
                             <input
                                 type="number"
-                                className="form-control no-spinner" // добавляем класс для удаления стрелок
+                                className="form-control no-spinner"
                                 placeholder="Введите цену продукта"
                                 name="price"
                                 value={price}
@@ -91,6 +122,38 @@ export default function AddProduct() {
                                 value={image}
                                 onChange={onInputChange}
                             />
+                        </div>
+                        <div className="mb-3">
+                            <label className="form-label">Категория</label>
+                            <div className="position-relative">
+                                <button
+                                    type="button"
+                                    className="form-control text-start"
+                                    onClick={() => setShowCategories(!showCategories)}
+                                >
+                                    {category ? category.name : "Выберите категорию"}
+                                </button>
+                                {showCategories && (
+                                    <div className="position-absolute w-100 bg-white border rounded mt-1" style={{ zIndex: 1000 }}>
+                                        {categories.length > 0 ? (
+                                            categories.map((cat) => (
+                                                <div
+                                                    key={cat.id}
+                                                    className="p-2 cursor-pointer hover-bg-light"
+                                                    onClick={() => handleCategorySelect(cat)}
+                                                    style={{ cursor: 'pointer' }}
+                                                >
+                                                    {cat.name}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="p-2 text-muted">
+                                                Сначала добавьте категорию
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <div className="d-flex justify-content-center">
                             <button type="submit" className="btn btn-outline-success mx-2">

@@ -57,28 +57,31 @@ export default function Navbar() {
             {isAuthenticated && decodedToken?.role === "ROLE_ADMIN" && (
               <>
                 <li className="nav-item me-2">
-          <Link className="button" to="/orders">Заказы</Link>
-        </li>
-        <li className="nav-item me-2">
-          <Link className="button" to="/addproduct">Добавить продукт</Link>
-        </li>
-      </>
-    )}
-    <li className="nav-item me-2">
-      <Link className="button" to="/profile">Профиль</Link>
-    </li>
-    <li className="nav-item me-2">
-      <Link className="button" to="/basket">Корзина</Link>
-    </li>
-    {!isAuthenticated && (
-      <>
-        <li className="nav-item me-2">
-          <Link className="button" to="/login">Войти</Link>
-        </li>
-        <li className="nav-item me-2">
-          <Link className="button" to="/registration">Зарегистрироваться</Link>
-        </li>
-      </>
+                  <Link className="button" to="/orders">Заказы</Link>
+                </li>
+                <li className="nav-item me-2">
+                  <Link className="button" to="/addproduct">Добавить продукт</Link>
+                </li>
+                <li className="nav-item me-2">
+                  <Link className="button" to="/categories">Категории</Link>
+                </li>
+              </>
+            )}
+            <li className="nav-item me-2">
+              <Link className="button" to="/profile">Профиль</Link>
+            </li>
+            <li className="nav-item me-2">
+              <Link className="button" to="/basket">Корзина</Link>
+            </li>
+            {!isAuthenticated && (
+              <>
+                <li className="nav-item me-2">
+                  <Link className="button" to="/login">Войти</Link>
+                </li>
+                <li className="nav-item me-2">
+                  <Link className="button" to="/registration">Зарегистрироваться</Link>
+                </li>
+              </>
             )}
             {isAuthenticated && (
               <li className="nav-item me-2" style={{ marginLeft: '20px' }}>

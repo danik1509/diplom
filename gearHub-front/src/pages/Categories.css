@@ -1,0 +1,173 @@
+/* Основной контейнер */
+.categories-container-main {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 0 10px;
+}
+
+.categories-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    margin-bottom: 32px;
+    padding: 32px 24px 24px 24px;
+    border: 1px solid #e0e0e0;
+}
+
+.categories-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.categories-section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+.add-category-form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.add-category-input {
+    flex: 1;
+    border-radius: 20px;
+    border: 2px solid #105008;
+    padding: 10px 18px;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.2s;
+}
+.add-category-input:focus {
+    border-color: #007bff;
+}
+
+.add-category-btn {
+    border-radius: 20px;
+    padding: 10px 24px;
+    background: #105008;
+    color: #fff;
+    border: none;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background 0.2s;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.add-category-btn:hover {
+    background: #00d962;
+}
+
+.categories-list {
+    margin-top: 10px;
+}
+
+.category-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 1.08rem;
+}
+.category-row:last-child {
+    border-bottom: none;
+}
+
+.category-edit-group {
+    display: flex;
+    gap: 8px;
+}
+
+.edit-category-input {
+    border-radius: 20px;
+    border: 2px solid #105008;
+    padding: 8px 16px;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.2s;
+}
+.edit-category-input:focus {
+    border-color: #007bff;
+}
+
+.save-btn {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+.save-btn:hover {
+    background: #0056b3;
+}
+.cancel-btn {
+    background: #6c757d;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+.cancel-btn:hover {
+    background: #343a40;
+}
+.edit-btn {
+    background: #00b84c;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+.edit-btn:hover {
+    background: #105008;
+}
+.delete-btn {
+    background: #e42727;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+.delete-btn:hover {
+    background: #a30000;
+}
+
+@media (max-width: 600px) {
+    .categories-card {
+        padding: 18px 6px 12px 6px;
+    }
+    .add-category-form {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .category-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .category-edit-group {
+        flex-direction: column;
+        gap: 6px;
+    }
+} 

@@ -12,10 +12,14 @@ export default function EditProduct() {
         description: "",
         weight: "",
         price: "",
-        image: ""  // Добавляем поле image
+        image: "",
+        category: null
     });
 
-    const { tittle, description, weight, price, image } = product;
+    const [categories, setCategories] = useState([]);
+    const [showCategories, setShowCategories] = useState(false);
+
+    const { tittle, description, weight, price, image, category } = product;
 
     const onInputChange = (e) => {
         setProduct({ ...product, [e.target.name]: e.target.value });
@@ -23,7 +27,34 @@ export default function EditProduct() {
 
     useEffect(() => {
         loadProduct();
+        fetchCategories();
     }, []);
+
+    const fetchCategories = async () => {
+        try {
+            const token = localStorage.getItem("jwt-token");
+            if (!token) {
+                navigate("/login");
+                return;
+            }
+            const response = await axios.get("http://localhost:8080/api/categories", {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setCategories(response.data);
+        } catch (error) {
+            console.error("Error fetching categories:", error);
+            if (error.response?.status === 401) {
+                navigate("/login");
+            }
+        }
+    };
+
+    const handleCategorySelect = (selectedCategory) => {
+        setProduct({ ...product, category: selectedCategory });
+        setShowCategories(false);
+    };
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -33,7 +64,11 @@ export default function EditProduct() {
                 navigate("/login");
                 return;
             }
-            await axios.patch(`http://localhost:8080/api/product/${id}`, product, {
+            const productData = {
+                ...product,
+                category: category ? { id: category.id } : null
+            };
+            await axios.patch(`http://localhost:8080/api/product/${id}`, productData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -139,6 +174,38 @@ export default function EditProduct() {
                                 value={image}
                                 onChange={onInputChange}
                             />
+                        </div>
+                        <div className="mb-3">
+                            <label className="form-label">Категория</label>
+                            <div className="position-relative">
+                                <button
+                                    type="button"
+                                    className="form-control text-start"
+                                    onClick={() => setShowCategories(!showCategories)}
+                                >
+                                    {category ? category.name : "Выберите категорию"}
+                                </button>
+                                {showCategories && (
+                                    <div className="position-absolute w-100 bg-white border rounded mt-1" style={{ zIndex: 1000 }}>
+                                        {categories.length > 0 ? (
+                                            categories.map((cat) => (
+                                                <div
+                                                    key={cat.id}
+                                                    className="p-2 cursor-pointer hover-bg-light"
+                                                    onClick={() => handleCategorySelect(cat)}
+                                                    style={{ cursor: 'pointer' }}
+                                                >
+                                                    {cat.name}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="p-2 text-muted">
+                                                Сначала добавьте категорию
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <div className="d-flex justify-content-center">
                             <button type="submit" className="btn btn-outline-primary mx-2">

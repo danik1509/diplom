@@ -15,6 +15,7 @@ import ViewOrder from './Order/ViewOrder';
 import AddAddress from './Address/AddAddress';
 import EditUser from './users/EditUser';
 import CreateOrder from './Order/CreateOrder';
+import Categories from './pages/Categories';
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
           <Route path="/profile" element={<UserPage />} />
           <Route path="/editUser" element={<EditUser />} />
           <Route path="/addAddress" element={<AddAddress />} />
+          <Route path="/categories" element={<Categories />} />
         </Routes>
       </Router>
     </div>
