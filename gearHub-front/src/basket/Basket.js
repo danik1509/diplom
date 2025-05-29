@@ -4,6 +4,19 @@ import { jwtDecode } from 'jwt-decode';
 import { Link, useNavigate } from 'react-router-dom';
 import './Basket.css';
 
+// Группировка товаров по id
+function groupCartItems(items) {
+  const grouped = {};
+  items.forEach(item => {
+    if (grouped[item.id]) {
+      grouped[item.id].quantity += 1;
+    } else {
+      grouped[item.id] = { ...item, quantity: 1 };
+    }
+  });
+  return Object.values(grouped);
+}
+
 export default function Basket() {
   const [cartItems, setCartItems] = useState([]);
   const [userAddresses, setUserAddress] = useState([]);
@@ -78,27 +91,43 @@ export default function Basket() {
   const updateQuantity = async (itemId, newQuantity) => {
     try {
       const token = localStorage.getItem("jwt-token");
+      // Используем сгруппированные данные!
+      const groupedItems = groupCartItems(cartItems);
+      const currentQuantity = groupedItems.find(item => item.id === itemId)?.quantity || 1;
+
       if (newQuantity < 1) {
-        removeFromCart(itemId);
+        await removeFromCart(itemId);
       } else {
-        await axios.put(`http://localhost:8080/api/bucket?id=${itemId}&quantity=${newQuantity}`, null, {
-          headers: {
-            Authorization: `Bearer ${token}`
+        if (newQuantity > currentQuantity) {
+          for (let i = currentQuantity; i < newQuantity; i++) {
+            await axios.post(`http://localhost:8080/api/bucket`, null, {
+              headers: { Authorization: `Bearer ${token}` },
+              params: { id: itemId }
+            });
           }
-        });
-        fetchCartItems();
+        } else if (newQuantity < currentQuantity) {
+          for (let i = currentQuantity; i > newQuantity; i--) {
+            await axios.delete(`http://localhost:8080/api/bucket`, {
+              headers: { Authorization: `Bearer ${token}` },
+              params: { id: itemId }
+            });
+          }
+        }
+        await fetchCartItems();
       }
     } catch (error) {
       console.error('Ошибка при обновлении количества:', error);
     }
   };
 
+  const groupedItems = groupCartItems(cartItems);
+
   return (
     <div className="container">
       <div className="row">
         <div className="col-md-8 offset-md-2 border rounded p-4 mt-2 shadow basket-container">
           <h2 className="text-center m-4 basket-title">Корзина</h2>
-          {cartItems.length === 0 ? (
+          {groupedItems.length === 0 ? (
             <p className="text-center empty-cart-message">Корзина пуста</p>
           ) : (
             <div className="table-responsive">
@@ -112,7 +141,7 @@ export default function Basket() {
                   </tr>
                 </thead>
                 <tbody>
-                  {cartItems.map((item) => (
+                  {groupedItems.map((item) => (
                     <tr key={item.id} className="cart-item">
                       <td>
                         <div className="d-flex align-items-center">
@@ -135,7 +164,7 @@ export default function Basket() {
                           >
                             -
                           </button>
-                          <span className="quantity">{item.quantity || 1}</span>
+                          <span className="quantity">{item.quantity}</span>
                           <button 
                             className="btn btn-outline-secondary btn-sm quantity-btn"
                             onClick={() => updateQuantity(item.id, (item.quantity || 1) + 1)}
@@ -158,13 +187,13 @@ export default function Basket() {
               </table>
             </div>
           )}
-          {cartItems.length > 0 && userAddresses.length > 0 ? (
+          {groupedItems.length > 0 && userAddresses.length > 0 ? (
             <div className="text-center mt-4">
               <Link className="btn btn-outline-primary create-order-btn" to="/createOrder">
                 Создать заказ
               </Link>
             </div>
-          ) : cartItems.length === 0 ? (
+          ) : groupedItems.length === 0 ? (
             <p className="text-center text-muted mt-3">Добавьте товары в корзину для оформления заказа</p>
           ) : (
             <div className="text-center mt-3">

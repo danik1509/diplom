@@ -29,7 +29,17 @@ public class BucketService {
     @Transactional
     public void addProductToBucket(int bucketId, int id) {
         Bucket bucket = getById(bucketId);
-        bucket.getProducts().add(productService.findOne(id));
+        var product = productService.findOne(id);
+        
+        // Если товар уже есть в корзине, увеличиваем его количество
+        if (bucket.getProducts().contains(product)) {
+            // Увеличиваем количество товара
+            bucket.getProducts().add(product);
+        } else {
+            // Если товара нет, добавляем его
+            bucket.getProducts().add(product);
+        }
+        
         bucketRepository.save(bucket);
     }
 
@@ -37,13 +47,8 @@ public class BucketService {
     public void removeProductFromBucket(int bucketId, Integer id) {
         Bucket bucket = getById(bucketId);
         var product = productService.findOne(id);
-        
-        // Проверяем, используется ли товар в заказах
-        var ordersWithProduct = orderRepository.findOrdersByProduct(product);
-        if (!ordersWithProduct.isEmpty()) {
-            throw new IllegalStateException("Невозможно удалить товар из корзины, так как он используется в заказах");
-        }
-        
+
+        // Удаляем один экземпляр товара
         bucket.getProducts().remove(product);
         bucketRepository.save(bucket);
     }

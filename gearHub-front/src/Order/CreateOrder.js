@@ -2,16 +2,23 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { Link, useNavigate } from 'react-router-dom';
+import ReactDatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function CreateOrder() {
     const [cartItems, setCartItems] = useState([]);
     const [userAddresses, setUserAddresses] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState('');
+    const [deliveryDate, setDeliveryDate] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
         fetchCartItems();
         fetchUserAddresses();
+        // Устанавливаем дату по умолчанию — завтра
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        setDeliveryDate(tomorrow);
     }, []);
 
     const fetchCartItems = async () => {
@@ -66,7 +73,7 @@ export default function CreateOrder() {
 
             const orderData = {
                 address: { id: selectedAddress },
-                dateOfDelivery: new Date(), // если нужно, можно заменить на выбранную дату
+                dateOfDelivery: deliveryDate ? deliveryDate.toISOString().split('T')[0] : '',
                 // остальные поля, если нужны
             };
 
@@ -101,6 +108,60 @@ export default function CreateOrder() {
         }
     };
 
+    const handleDecreaseQuantity = async (productId) => {
+        try {
+            const token = localStorage.getItem("jwt-token");
+            if (!token) {
+                navigate("/login");
+                return;
+            }
+            
+            console.log('Уменьшаем количество товара:', productId);
+            const response = await axios.delete(`http://localhost:8080/api/bucket`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                params: {
+                    id: productId
+                }
+            });
+            
+            console.log('Ответ сервера при уменьшении:', response);
+            // Обновляем список товаров после удаления
+            await fetchCartItems();
+        } catch (error) {
+            console.error('Ошибка при уменьшении количества товара:', error);
+            alert('Произошла ошибка при изменении количества товара');
+        }
+    };
+
+    const handleIncreaseQuantity = async (productId) => {
+        try {
+            const token = localStorage.getItem("jwt-token");
+            if (!token) {
+                navigate("/login");
+                return;
+            }
+            
+            console.log('Увеличиваем количество товара:', productId);
+            const response = await axios.post(`http://localhost:8080/api/bucket`, null, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                params: {
+                    id: productId
+                }
+            });
+            
+            console.log('Ответ сервера при увеличении:', response);
+            // Обновляем список товаров после добавления
+            await fetchCartItems();
+        } catch (error) {
+            console.error('Ошибка при увеличении количества товара:', error);
+            alert('Произошла ошибка при изменении количества товара');
+        }
+    };
+
     return (
         <div className="container">
             <div className="row">
@@ -127,7 +188,21 @@ export default function CreateOrder() {
                                                 </div>
                                                 <div className="flex-grow-1">
                                                     <h6 className="mb-1">{item.tittle || item.name}</h6>
-                                                    <p className="mb-1 small">Количество: {item.quantity}</p>
+                                                    <div className="d-flex align-items-center mb-1">
+                                                        <button 
+                                                            className="btn btn-sm btn-outline-secondary me-2"
+                                                            onClick={() => handleDecreaseQuantity(item.id)}
+                                                        >
+                                                            -
+                                                        </button>
+                                                        <span className="mx-2">{item.quantity}</span>
+                                                        <button 
+                                                            className="btn btn-sm btn-outline-secondary ms-2"
+                                                            onClick={() => handleIncreaseQuantity(item.id)}
+                                                        >
+                                                            +
+                                                        </button>
+                                                    </div>
                                                     <small className="text-muted">
                                                         Цена: {item.price} ₽
                                                     </small>
@@ -170,6 +245,20 @@ export default function CreateOrder() {
                                     </div>
                                 ))}
                             </div>
+                        </div>
+                    </div>
+
+                    <div className="card mb-3">
+                        <div className="card-body p-3">
+                            <h5 className="card-title mb-3">Выберите дату доставки</h5>
+                            <ReactDatePicker
+                                selected={deliveryDate}
+                                onChange={date => setDeliveryDate(date)}
+                                minDate={(() => { const d = new Date(); d.setDate(d.getDate() + 1); return d; })()}
+                                dateFormat="yyyy-MM-dd"
+                                placeholderText="Выберите дату доставки"
+                                className="form-control"
+                            />
                         </div>
                     </div>
 
